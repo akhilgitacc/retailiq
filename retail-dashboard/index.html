@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RetailIQ — Analytics Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">R</div>
+    <div class="logo-text">
+      RetailIQ
+      <div class="logo-sub">Analytics Platform</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Main</div>
+  <button class="nav-item active" data-page="dashboard">
+    <span class="nav-icon">▦</span> Overview
+  </button>
+  <button class="nav-item" data-page="orders">
+    <span class="nav-icon">◈</span> Orders
+  </button>
+  <button class="nav-item" data-page="products">
+    <span class="nav-icon">⊞</span> Products
+  </button>
+
+  <div class="nav-section">Insights</div>
+  <button class="nav-item" data-page="analytics">
+    <span class="nav-icon">⟁</span> Analytics
+  </button>
+  <button class="nav-item" data-page="regions">
+    <span class="nav-icon">◉</span> Regions
+  </button>
+
+  <div class="sidebar-footer">
+    <div>FY 2024 · Live data</div>
+    <div class="version" style="margin-top:4px">v1.0.0</div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<div id="main">
+
+  <!-- Topbar -->
+  <header id="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-sub" id="topbar-sub">FY 2024 performance summary</div>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="topbar-filters">
+      <div class="filter-group">
+        <label>Month</label>
+        <select id="filterMonth">
+          <option value="all">All</option>
+          <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option>
+          <option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option>
+          <option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option>
+          <option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="filterCat">
+          <option value="all">All</option>
+          <option>Electronics</option><option>Clothing</option>
+          <option>Home &amp; Garden</option><option>Beauty</option>
+          <option>Sports</option><option>Books</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Region</label>
+        <select id="filterRegion">
+          <option value="all">All</option>
+          <option>Hyderabad</option><option>Mumbai</option><option>Bangalore</option>
+          <option>Delhi</option><option>Chennai</option><option>Kolkata</option>
+          <option>Pune</option><option>Ahmedabad</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost" onclick="resetFilters()">↺ Reset</button>
+      <button class="btn btn-primary" onclick="exportCSV()">↓ Export</button>
+    </div>
+
+    <!-- Mobile search -->
+    <input id="searchInput" type="text" placeholder="Search..." style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:200px" />
+  </header>
+
+  <!-- Content -->
+  <main id="content">
+
+    <!-- ═══ DASHBOARD PAGE ═══ -->
+    <div id="page-dashboard" class="page active">
+
+      <!-- KPI row -->
+      <div class="section">
+        <div class="grid-4" style="margin-bottom:0">
+          <div class="kpi-card blue fade-up delay-1">
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-value" id="kpi-revenue">—</div>
+            <span class="kpi-delta up">↑ 12.4% vs 2023</span>
+          </div>
+          <div class="kpi-card green fade-up delay-2">
+            <div class="kpi-label">Orders Placed</div>
+            <div class="kpi-value" id="kpi-orders">—</div>
+            <span class="kpi-delta up">↑ 8.1% vs 2023</span>
+          </div>
+          <div class="kpi-card amber fade-up delay-3">
+            <div class="kpi-label">Avg Order Value</div>
+            <div class="kpi-value" id="kpi-aov">—</div>
+            <span class="kpi-delta up">↑ 3.9% vs 2023</span>
+          </div>
+          <div class="kpi-card purple fade-up delay-4">
+            <div class="kpi-label">Gross Profit</div>
+            <div class="kpi-value" id="kpi-profit">—</div>
+            <span class="kpi-delta up">↑ 9.2% vs 2023</span>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:16px">
+          <div class="kpi-card cyan fade-up delay-5">
+            <div class="kpi-label">Profit Margin</div>
+            <div class="kpi-value" id="kpi-margin">—</div>
+            <span class="kpi-delta neu">Industry avg 28%</span>
+          </div>
+          <div class="kpi-card red fade-up delay-6">
+            <div class="kpi-label">Return Rate</div>
+            <div class="kpi-value" id="kpi-return">—</div>
+            <span class="kpi-delta dn">↑ 0.4% vs 2023</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue chart + Category donut -->
+      <div class="section grid-2-1" style="align-items:start">
+        <div class="card fade-up">
+          <div class="card-header">
+            <span class="card-title" style="margin-bottom:0">Monthly Revenue</span>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>2024</div>
+              <div class="legend-item"><span class="legend-dot" style="background:rgba(59,130,246,0.25)"></span>2023</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:240px">
+            <canvas id="revenueChart" role="img" aria-label="Monthly revenue bar chart 2024 vs 2023">Monthly revenue 2024 vs 2023.</canvas>
+          </div>
+        </div>
+
+        <div class="card fade-up delay-1">
+          <div class="card-title">Sales by Category</div>
+          <div class="donut-wrap" style="height:200px">
+            <canvas id="categoryDonut" role="img" aria-label="Category sales donut chart">Category revenue breakdown.</canvas>
+            <div class="donut-center">
+              <div class="donut-center-val" id="donut-center-val">—</div>
+              <div class="donut-center-label">total</div>
+            </div>
+          </div>
+          <div style="margin-top:12px" id="catLegend"></div>
+        </div>
+      </div>
+
+      <!-- Top products + Recent orders + Status -->
+      <div class="section grid-3-2" style="align-items:start">
+        <div class="card fade-up">
+          <div class="card-header">
+            <span class="card-title" style="margin-bottom:0">Recent Orders</span>
+            <span style="font-size:11px;color:var(--text3)">Last 8 transactions</span>
+          </div>
+          <div class="scroll-y" style="max-height:280px">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order</th><th>Customer</th><th>Product</th><th>Date</th><th style="text-align:right">Value</th><th style="text-align:right">Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentOrdersTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card fade-up delay-1">
+            <div class="card-title">Top Products</div>
+            <div id="topProductsList"></div>
+          </div>
+          <div class="card fade-up delay-2">
+            <div class="card-title">Order Status</div>
+            <div id="statusBars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ORDERS PAGE ═══ -->
+    <div id="page-orders" class="page">
+      <div class="grid-4 section fade-up">
+        <div class="kpi-card blue"><div class="kpi-label">Total Orders</div><div class="kpi-value" id="ord-kpi-count">—</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Revenue</div><div class="kpi-value" id="ord-kpi-revenue">—</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Avg Order Value</div><div class="kpi-value" id="ord-kpi-aov">—</div></div>
+        <div class="kpi-card red"><div class="kpi-label">Return Rate</div><div class="kpi-value" id="ord-kpi-return">—</div></div>
+      </div>
+
+      <div class="card fade-up">
+        <div class="card-header">
+          <div>
+            <span class="card-title" style="margin-bottom:0">Order History</span>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="orders-count"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="searchInput" type="text" placeholder="Search orders..." oninput="App.renderOrders()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:200px" />
+            <select id="statusFilter" onchange="App.renderOrders()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);font-family:var(--font);font-size:12px;outline:none">
+              <option value="all">All statuses</option>
+              <option>Delivered</option><option>Shipped</option>
+              <option>Processing</option><option>Returned</option>
+            </select>
+          </div>
+        </div>
+        <div class="scroll-y" style="max-height:560px">
+          <table class="data-table" style="table-layout:fixed;width:100%">
+            <colgroup>
+              <col style="width:80px"><col style="width:140px"><col><col style="width:110px">
+              <col style="width:100px"><col style="width:80px"><col style="width:90px"><col style="width:90px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>ID</th><th>Customer</th><th>Product</th><th>Category</th>
+                <th>Region</th><th>Date</th><th style="text-align:right">Revenue</th><th style="text-align:right">Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PRODUCTS PAGE ═══ -->
+    <div id="page-products" class="page">
+      <div class="section card-header fade-up">
+        <div>
+          <div class="topbar-title">Product Catalogue</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px" id="products-count"></div>
+        </div>
+        <input id="searchInput" type="text" placeholder="Search products..." oninput="App.renderProducts()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:220px" />
+      </div>
+      <div class="product-grid fade-up" id="productsGrid"></div>
+    </div>
+
+    <!-- ═══ ANALYTICS PAGE ═══ -->
+    <div id="page-analytics" class="page">
+
+      <div class="grid-2-1 section" style="align-items:start">
+        <div class="card fade-up">
+          <div class="card-header">
+            <span class="card-title" style="margin-bottom:0">Revenue &amp; Profit Trend</span>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Revenue 2024</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Profit</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#555e72;border:1px dashed"></span>Revenue 2023</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="analyticsLineChart" role="img" aria-label="Revenue and profit trend line chart">Revenue, profit, and prior year trends.</canvas>
+          </div>
+        </div>
+
+        <div class="card fade-up delay-1">
+          <div class="card-title">Key Stats</div>
+          <div id="analyticsStats"></div>
+        </div>
+      </div>
+
+      <div class="grid-2 section" style="align-items:start">
+        <div class="card fade-up">
+          <div class="card-title">Avg Order Value by Month</div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="aovChart" role="img" aria-label="Average order value by month bar chart">AOV by month.</canvas>
+          </div>
+        </div>
+        <div class="card fade-up delay-1">
+          <div class="card-title">Revenue by Category</div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="catRevenueChart" role="img" aria-label="Horizontal bar chart of revenue by category">Category revenue comparison.</canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REGIONS PAGE ═══ -->
+    <div id="page-regions" class="page">
+
+      <div class="grid-4 section fade-up">
+        <div class="kpi-card blue"><div class="kpi-label">Total Revenue</div><div class="kpi-value" id="reg-kpi-revenue">—</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Total Orders</div><div class="kpi-value" id="reg-kpi-orders">—</div></div>
+        <div class="kpi-card purple"><div class="kpi-label">Active Regions</div><div class="kpi-value" id="reg-kpi-regions">—</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Top Region</div><div class="kpi-value" id="reg-kpi-top" style="font-size:18px">—</div></div>
+      </div>
+
+      <div class="grid-2-1 section" style="align-items:start">
+        <div class="card fade-up">
+          <div class="card-title">Revenue by Region</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="regionsChart" role="img" aria-label="Horizontal bar chart of revenue by region">Regional revenue breakdown.</canvas>
+          </div>
+        </div>
+        <div class="card fade-up delay-1">
+          <div class="card-title">Regional Breakdown</div>
+          <div id="regionsList"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
